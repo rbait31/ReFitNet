@@ -7,15 +7,15 @@ async function getNotes() {
         createdAt: 'desc',
       },
     })
-    return notes
+    return { notes, error: null }
   } catch (error) {
     console.error('Error fetching notes:', error)
-    return []
+    return { notes: [], error: error instanceof Error ? error.message : 'Unknown error' }
   }
 }
 
 export default async function Home() {
-  const notes = await getNotes()
+  const { notes, error } = await getNotes()
 
   return (
     <main style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
@@ -28,7 +28,27 @@ export default async function Home() {
         </p>
       </div>
 
-      {notes.length === 0 ? (
+      {error ? (
+        <div style={{ 
+          padding: '2rem', 
+          background: '#fff3cd', 
+          border: '1px solid #ffc107',
+          borderRadius: '8px',
+          color: '#856404'
+        }}>
+          <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Database Connection Error</p>
+          <p style={{ marginBottom: '1rem' }}>{error}</p>
+          <div style={{ fontSize: '0.875rem', marginTop: '1rem' }}>
+            <p>To fix this:</p>
+            <ol style={{ marginLeft: '1.5rem', marginTop: '0.5rem' }}>
+              <li>Create a <code>.env</code> file in the project root</li>
+              <li>Add your NeonDB connection string: <code>DATABASE_URL="postgresql://..."</code></li>
+              <li>Run <code>npm run db:push</code> to create the database schema</li>
+              <li>Run <code>npm run db:seed</code> to add sample data</li>
+            </ol>
+          </div>
+        </div>
+      ) : notes.length === 0 ? (
         <div style={{ 
           padding: '2rem', 
           background: '#f5f5f5', 
