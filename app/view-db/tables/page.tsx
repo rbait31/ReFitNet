@@ -10,7 +10,7 @@ const TABLE_NAMES = [
   { name: 'users', label: 'Users' },
   { name: 'notes', label: 'Notes' },
   { name: 'categories', label: 'Categories' },
-  { name: 'prompts', label: 'Prompts' },
+  { name: 'mresults', label: 'Mresults' },
   { name: 'tags', label: 'Tags' },
   { name: 'votes', label: 'Votes' },
 ]

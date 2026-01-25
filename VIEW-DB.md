@@ -50,7 +50,7 @@ npm run dev
   - Users
   - Notes
   - Categories
-  - Prompts
+  - Mresults
   - Tags
   - Votes
 - Нажмите **Open** на нужной таблице

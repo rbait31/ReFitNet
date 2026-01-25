@@ -67,7 +67,7 @@ export const TABLE_NAMES = [
   { name: 'users', label: 'Users', modelName: 'user' },
   { name: 'notes', label: 'Notes', modelName: 'note' },
   { name: 'categories', label: 'Categories', modelName: 'category' },
-  { name: 'prompts', label: 'Prompts', modelName: 'prompt' },
+  { name: 'mresults', label: 'Mresults', modelName: 'mresult' },
   { name: 'tags', label: 'Tags', modelName: 'tag' },
   { name: 'votes', label: 'Votes', modelName: 'vote' },
 ] as const

@@ -26,11 +26,11 @@ async function main() {
   })
   console.log('✓ Created category:', category)
 
-  // Создаем тестовый промпт
-  const prompt = await prisma.prompt.create({
+  // Создаем тестовый результат (Mresult)
+  const mresult = await prisma.mresult.create({
     data: {
       title: 'Test Recovery Workout',
-      content: 'This is a test recovery workout prompt content.',
+      content: 'This is a test recovery workout content.',
       description: 'A sample recovery workout for testing purposes',
       ownerId: user.id,
       categoryId: category.id,
@@ -38,13 +38,13 @@ async function main() {
       publishedAt: new Date(),
     },
   })
-  console.log('✓ Created prompt:', prompt)
+  console.log('✓ Created mresult:', mresult)
 
-  // Создаем голос (vote) для промпта
+  // Создаем голос (vote) для результата
   const vote = await prisma.vote.create({
     data: {
       userId: user.id,
-      promptId: prompt.id,
+      mresultId: mresult.id,
       value: 1,
     },
   })
@@ -62,7 +62,7 @@ async function main() {
   console.log('\n✅ Test data created successfully!')
   console.log('\nSummary:')
   console.log(`  User: ${user.email} (${user.id})`)
-  console.log(`  Prompt: ${prompt.title} (${prompt.id})`)
+  console.log(`  Mresult: ${mresult.title} (${mresult.id})`)
   console.log(`  Vote: ${vote.value} (${vote.id})`)
   console.log(`  Note: ${note.title} (${note.id})`)
 }
