@@ -64,13 +64,19 @@ export function disconnectPrisma(dbType?: DbType) {
 
 // Список всех таблиц в схеме
 export const TABLE_NAMES = [
-  { name: 'users', label: 'Users' },
-  { name: 'notes', label: 'Notes' },
-  { name: 'categories', label: 'Categories' },
-  { name: 'prompts', label: 'Prompts' },
-  { name: 'tags', label: 'Tags' },
-  { name: 'votes', label: 'Votes' },
+  { name: 'users', label: 'Users', modelName: 'user' },
+  { name: 'notes', label: 'Notes', modelName: 'note' },
+  { name: 'categories', label: 'Categories', modelName: 'category' },
+  { name: 'prompts', label: 'Prompts', modelName: 'prompt' },
+  { name: 'tags', label: 'Tags', modelName: 'tag' },
+  { name: 'votes', label: 'Votes', modelName: 'vote' },
 ] as const
 
 export type TableName = typeof TABLE_NAMES[number]['name']
+
+// Маппинг имени таблицы в имя модели Prisma
+export function getModelName(tableName: TableName): string {
+  const table = TABLE_NAMES.find(t => t.name === tableName)
+  return table?.modelName || tableName
+}
 

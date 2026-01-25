@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const tablesWithCounts = await Promise.all(
       TABLE_NAMES.map(async (table) => {
         try {
-          const count = await (prisma as any)[table.name].count()
+          const count = await (prisma as any)[table.modelName].count()
           return {
             name: table.name,
             label: table.label,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPrismaClient, TableName } from '@/lib/db-factory'
+import { getPrismaClient, TableName, getModelName } from '@/lib/db-factory'
 
 const ITEMS_PER_PAGE = 20
 
@@ -16,17 +16,33 @@ export async function GET(request: NextRequest) {
     }
 
     const prisma = getPrismaClient(dbType as 'local' | 'production')
-    const model = (prisma as any)[tableName]
+    const modelName = getModelName(tableName)
+    const model = (prisma as any)[modelName]
 
     if (!model) {
-      return NextResponse.json({ error: 'Table not found' }, { status: 404 })
+      return NextResponse.json({ error: `Table not found: ${tableName} (model: ${modelName})` }, { status: 404 })
+    }
+
+    // Пытаемся использовать createdAt для сортировки, если поле существует
+    let orderBy: any = {}
+    try {
+      // Проверяем, есть ли поле createdAt в первой записи
+      const firstRecord = await model.findFirst()
+      if (firstRecord && 'createdAt' in firstRecord) {
+        orderBy = { createdAt: 'desc' }
+      } else if (firstRecord && 'id' in firstRecord) {
+        orderBy = { id: 'desc' }
+      }
+    } catch {
+      // Если не удалось определить, используем id
+      orderBy = { id: 'desc' }
     }
 
     const [data, total] = await Promise.all([
       model.findMany({
         skip,
         take: ITEMS_PER_PAGE,
-        orderBy: { createdAt: 'desc' },
+        ...(Object.keys(orderBy).length > 0 ? { orderBy } : {}),
       }),
       model.count(),
     ])
@@ -60,10 +76,11 @@ export async function POST(request: NextRequest) {
     }
 
     const prisma = getPrismaClient(dbType as 'local' | 'production')
-    const model = (prisma as any)[tableName]
+    const modelName = getModelName(tableName)
+    const model = (prisma as any)[modelName]
 
     if (!model) {
-      return NextResponse.json({ error: 'Table not found' }, { status: 404 })
+      return NextResponse.json({ error: `Table not found: ${tableName} (model: ${modelName})` }, { status: 404 })
     }
 
     const result = await model.create({ data: body })
@@ -90,10 +107,11 @@ export async function PUT(request: NextRequest) {
     }
 
     const prisma = getPrismaClient(dbType as 'local' | 'production')
-    const model = (prisma as any)[tableName]
+    const modelName = getModelName(tableName)
+    const model = (prisma as any)[modelName]
 
     if (!model) {
-      return NextResponse.json({ error: 'Table not found' }, { status: 404 })
+      return NextResponse.json({ error: `Table not found: ${tableName} (model: ${modelName})` }, { status: 404 })
     }
 
     const result = await model.update({
@@ -122,10 +140,11 @@ export async function DELETE(request: NextRequest) {
     }
 
     const prisma = getPrismaClient(dbType as 'local' | 'production')
-    const model = (prisma as any)[tableName]
+    const modelName = getModelName(tableName)
+    const model = (prisma as any)[modelName]
 
     if (!model) {
-      return NextResponse.json({ error: 'Table not found' }, { status: 404 })
+      return NextResponse.json({ error: `Table not found: ${tableName} (model: ${modelName})` }, { status: 404 })
     }
 
     await model.delete({ where: { id } })
