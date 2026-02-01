@@ -1,0 +1,44 @@
+# Переменные окружения для Vercel
+# Скопируйте эти переменные в Vercel Dashboard → Settings → Environment Variables
+
+# ============================================
+# DATABASE
+# ============================================
+# ВАЖНО: Добавьте ваш production connection string из NeonDB
+# НЕ коммитьте секреты в Git!
+DATABASE_URL=your_production_database_connection_string_here
+
+# ============================================
+# GOOGLE OAUTH
+# ============================================
+# ВАЖНО: Добавьте ваши реальные значения из Google Cloud Console
+# НЕ коммитьте секреты в Git!
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+
+# ============================================
+# AUTH SECRETS (Production)
+# ============================================
+# ВАЖНО: Сгенерируйте новые секреты для production!
+# Используйте: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+# НЕ коммитьте секреты в Git!
+AUTH_SECRET=your_generated_production_secret_here
+NEXTAUTH_SECRET=your_generated_production_secret_here
+
+# ============================================
+# NEXTAUTH URL
+# ============================================
+# ВАЖНО: Замените на ваш реальный домен Vercel после деплоя!
+# Пример: https://refitnet.vercel.app
+# Или ваш кастомный домен: https://refitnet.com
+NEXTAUTH_URL=https://your-domain.vercel.app
+
+# ============================================
+# ИНСТРУКЦИЯ
+# ============================================
+# 1. Откройте Vercel Dashboard → Ваш проект → Settings → Environment Variables
+# 2. Добавьте каждую переменную отдельно (Name и Value)
+# 3. Убедитесь, что NEXTAUTH_URL указывает на ваш production домен
+# 4. После добавления переменных перезапустите деплой
+# 5. Не забудьте обновить Google OAuth redirect URI на ваш production домен!
+
