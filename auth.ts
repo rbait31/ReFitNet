@@ -59,6 +59,22 @@ export const authOptions: NextAuthOptions = {
       if (session.user && user) {
         session.user.id = user.id
       }
+      
+      // Для OAuth провайдеров (Google) email уже верифицирован провайдером
+      // Обновляем emailVerified при каждой сессии, если оно еще не установлено
+      if (user?.email && !user?.emailVerified) {
+        try {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { emailVerified: new Date() },
+          })
+          console.log("[Auth] emailVerified set for user:", user.email)
+        } catch (error) {
+          // Игнорируем ошибки обновления
+          console.log("[Auth] Failed to update emailVerified:", error)
+        }
+      }
+      
       console.log("[Auth] session callback - userId:", user?.id, "email:", session.user?.email)
       return session
     },
