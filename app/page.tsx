@@ -1,8 +1,15 @@
 import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/auth'
+import { redirect } from 'next/navigation'
 
-async function getNotes() {
+async function getNotes(userId: string) {
   try {
+    // Получаем только заметки текущего пользователя
     const notes = await prisma.note.findMany({
+      where: {
+        ownerId: userId,
+      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -15,16 +22,40 @@ async function getNotes() {
 }
 
 export default async function Home() {
-  const { notes, error } = await getNotes()
+  // Проверяем авторизацию
+  // Middleware уже защищает эту страницу, но проверяем для безопасности
+  const session = await getServerSession(authOptions)
+  
+  // Если не авторизован - middleware уже редиректнул на /login
+  // Но на всякий случай проверяем еще раз
+  if (!session || !session.user?.id) {
+    redirect('/login')
+  }
+
+  // Получаем заметки только текущего пользователя
+  const { notes, error } = await getNotes(session.user.id)
 
   return (
     <main style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h1 style={{ marginBottom: '2rem', fontSize: '2rem' }}>ReFitNet</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '2rem' }}>ReFitNet</h1>
+        {session.user?.image && (
+          <img
+            src={session.user.image}
+            alt={session.user.name || 'User'}
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+            }}
+          />
+        )}
+      </div>
       
       <div style={{ marginBottom: '1rem', color: '#666' }}>
-        <p>Next.js + Prisma + NeonDB (PostgreSQL)</p>
+        <p>Добро пожаловать, <strong>{session.user?.name || session.user?.email}</strong>!</p>
         <p style={{ marginTop: '0.5rem' }}>
-          Total notes: <strong>{notes.length}</strong>
+          Ваших заметок: <strong>{notes.length}</strong>
         </p>
       </div>
 
