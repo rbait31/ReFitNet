@@ -1,66 +1,57 @@
-# 🚀 Быстрый деплой на Vercel
+# ⚡ Быстрый старт: Деплой на Vercel
 
-## Шаг 1: Подготовка базы данных
+## 🎯 Шаги для деплоя
 
-```bash
-# Примените схему к production базе
-DATABASE_URL="your_production_connection_string" npx prisma db push
+### 1. Подготовка базы данных
+
+```powershell
+# Примените миграции к production базе
+$env:DATABASE_URL="your_production_neondb_connection_string"
+npx prisma db push
 ```
 
-## Шаг 2: Настройка Google OAuth
+### 2. Настройка Google OAuth
 
 1. Откройте [Google Cloud Console](https://console.cloud.google.com/)
-2. Добавьте в **Authorized redirect URIs**:
+2. **APIs & Services** → **Credentials** → Ваш OAuth Client
+3. Добавьте в **Authorized redirect URIs**:
    ```
-   https://your-domain.vercel.app/api/auth/callback/google
+   https://your-app.vercel.app/api/auth/callback/google
    ```
 
-## Шаг 3: Деплой на Vercel
+### 3. Генерация секретов
 
-### Через Dashboard:
-
-1. Откройте [Vercel Dashboard](https://vercel.com/dashboard)
-2. Нажмите **"Add New Project"**
-3. Подключите ваш Git репозиторий
-4. В разделе **Environment Variables** добавьте:
-
-```
-DATABASE_URL=your_production_neondb_connection_string
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-AUTH_SECRET=your_generated_secret
-NEXTAUTH_SECRET=your_generated_secret
-NEXTAUTH_URL=https://your-domain.vercel.app
+```powershell
+# Сгенерируйте секрет (используйте для AUTH_SECRET и NEXTAUTH_SECRET)
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
-5. Нажмите **"Deploy"**
+### 4. Деплой на Vercel
 
-### Через CLI:
+1. **Подключите репозиторий** в [Vercel Dashboard](https://vercel.com/dashboard)
+2. **Добавьте переменные окружения:**
+   ```
+   DATABASE_URL=your_production_neondb_connection_string
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   AUTH_SECRET=your_generated_secret
+   NEXTAUTH_SECRET=your_generated_secret
+   NEXTAUTH_URL=https://your-app.vercel.app
+   ```
+3. **Нажмите Deploy**
 
-```bash
-# Установите Vercel CLI
-npm i -g vercel
+### 5. После деплоя
 
-# Войдите
-vercel login
-
-# Деплой
-vercel --prod
-```
-
-## Шаг 4: Проверка
-
-1. Откройте ваш домен Vercel
-2. Перейдите на `/login`
-3. Войдите через Google
-4. Проверьте работу приложения
+1. Обновите `NEXTAUTH_URL` на реальный домен
+2. Перезапустите деплой
+3. Проверьте работу приложения
 
 ## ⚠️ Важно
 
-- `NEXTAUTH_URL` должен быть вашим production доменом
-- Используйте разные секреты для development и production
-- Не коммитьте `.env` файл в Git
+- Используйте **разные** секреты для production и development
+- `NEXTAUTH_URL` должен быть полным URL с `https://`
+- Добавьте redirect URI в Google Console **до** первого деплоя
 
-Подробная инструкция: см. `VERCEL_DEPLOY.md`
+## 📖 Подробная инструкция
 
-
+См. [VERCEL_DEPLOY.md](./VERCEL_DEPLOY.md) для детальной информации.
