@@ -1,15 +1,12 @@
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/auth"
 import { redirect } from "next/navigation"
-import { getUserResults } from "@/app/actions/result-actions"
-import { ResultsList } from "@/components/dashboard/ResultsList"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
-import { CreateResultButton } from "@/components/dashboard/CreateResultButton"
+import { getPublicResults } from "@/app/actions/result-actions"
+import { PublicResultsList } from "@/components/dashboard/PublicResultsList"
 
 export const dynamic = "force-dynamic"
 
-export default async function DashboardPage({
+export default async function PublicResultsPage({
   searchParams,
 }: {
   searchParams: { page?: string; search?: string }
@@ -23,7 +20,7 @@ export default async function DashboardPage({
   const page = parseInt(searchParams.page || "1", 10)
   const search = searchParams.search || undefined
 
-  const result = await getUserResults(page, 10, search)
+  const result = await getPublicResults(page, 10, search)
 
   if (!result.success || !result.data) {
     return (
@@ -38,17 +35,16 @@ export default async function DashboardPage({
   return (
     <div className="p-8 bg-white min-h-screen">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Личный кабинет
-            </h1>
-            <h2 className="text-xl text-gray-600">Мои результаты</h2>
-          </div>
-          <CreateResultButton />
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Публичные результаты
+          </h1>
+          <p className="text-gray-600">
+            Все публичные результаты пользователей
+          </p>
         </div>
 
-        <ResultsList
+        <PublicResultsList
           results={results}
           currentUserId={session.user.id}
           pagination={pagination}
@@ -58,3 +54,4 @@ export default async function DashboardPage({
     </div>
   )
 }
+

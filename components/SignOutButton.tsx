@@ -1,26 +1,20 @@
 "use client"
 
 import { signOut } from "next-auth/react"
+import { Button } from "@/components/ui/button"
 
 /**
  * Компонент кнопки выхода
  */
 export function SignOutButton() {
   return (
-    <button
+    <Button
+      variant="destructive"
+      size="sm"
       onClick={() => signOut({ callbackUrl: "/login" })}
-      style={{
-        padding: "0.5rem 1rem",
-        background: "#ef4444",
-        color: "white",
-        border: "none",
-        borderRadius: "6px",
-        cursor: "pointer",
-        fontSize: "0.875rem",
-        fontWeight: "500",
-      }}
+      className="w-full"
     >
       Выйти
-    </button>
+    </Button>
   )
 }
