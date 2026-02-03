@@ -58,6 +58,10 @@ export const authOptions: NextAuthOptions = {
       // Добавляем userId в сессию для удобного доступа
       if (session.user && user) {
         session.user.id = user.id
+        // Передаем image из базы данных в сессию (если есть)
+        if (user.image) {
+          session.user.image = user.image
+        }
       }
       
       // Для OAuth провайдеров (Google) email уже верифицирован провайдером
@@ -75,7 +79,7 @@ export const authOptions: NextAuthOptions = {
         }
       }
       
-      console.log("[Auth] session callback - userId:", user?.id, "email:", session.user?.email)
+      console.log("[Auth] session callback - userId:", user?.id, "email:", session.user?.email, "image:", session.user?.image)
       return session
     },
     async redirect({ url, baseUrl }) {

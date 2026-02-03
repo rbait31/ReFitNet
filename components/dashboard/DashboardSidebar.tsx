@@ -61,7 +61,25 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
             <img
               src={user.image}
               alt={user.name || "User"}
-              className="w-16 h-16 rounded-full border-2 border-white shadow-md"
+              className="w-16 h-16 rounded-full border-2 border-white shadow-md object-cover"
+              style={{ 
+                width: '64px', 
+                height: '64px',
+                minWidth: '64px',
+                minHeight: '64px'
+              }}
+              referrerPolicy="no-referrer"
+              onLoad={() => {
+                console.log('User image loaded successfully:', user.image)
+              }}
+              onError={(e) => {
+                console.error('Failed to load user image:', user.image)
+                // Если изображение не загрузилось, показываем placeholder
+                const placeholder = document.createElement('div')
+                placeholder.className = 'w-16 h-16 rounded-full bg-blue-400 flex items-center justify-center text-white text-xl font-semibold border-2 border-white shadow-md'
+                placeholder.textContent = user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"
+                e.currentTarget.parentElement?.replaceChild(placeholder, e.currentTarget)
+              }}
             />
           ) : (
             <div className="w-16 h-16 rounded-full bg-blue-400 flex items-center justify-center text-white text-xl font-semibold border-2 border-white shadow-md">
