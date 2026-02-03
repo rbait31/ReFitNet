@@ -126,3 +126,4 @@ GET /api/auth/callback/google?code=...&state=...
 3. Проверьте, что в Google Console нет ограничений по IP или домену
 4. Попробуйте создать новый OAuth Client ID и обновить переменные окружения
 
+
