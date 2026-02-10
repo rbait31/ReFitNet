@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"
 export default async function PublicResultsPage({
   searchParams,
 }: {
-  searchParams: { page?: string; search?: string }
+  searchParams: { page?: string; search?: string; sort?: string }
 }) {
   const session = await getServerSession(authOptions)
 
@@ -19,8 +19,9 @@ export default async function PublicResultsPage({
 
   const page = parseInt(searchParams.page || "1", 10)
   const search = searchParams.search || undefined
+  const sort = (searchParams.sort === "popular" ? "popular" : "recent") as "popular" | "recent"
 
-  const result = await getPublicResults(page, 10, search)
+  const result = await getPublicResults(page, 10, search, sort, session.user.id)
 
   if (!result.success || !result.data) {
     return (
@@ -49,6 +50,7 @@ export default async function PublicResultsPage({
           currentUserId={session.user.id}
           pagination={pagination}
           search={search}
+          sort={sort}
         />
       </div>
     </div>

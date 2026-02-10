@@ -14,6 +14,7 @@ import {
 import { toggleFavorite, togglePublic, deleteResult } from "@/app/actions/result-actions"
 import { useRouter } from "next/navigation"
 import { ResultDialog } from "./ResultDialog"
+import { LikeButton } from "./LikeButton"
 import { cn } from "@/lib/utils"
 
 interface ResultCardProps {
@@ -26,12 +27,15 @@ interface ResultCardProps {
     createdAt: Date
     updatedAt: Date
     userId: string
+    likesCount?: number
+    likedByMe?: boolean
   }
   currentUserId: string
   onUpdate?: () => void
+  showLike?: boolean // Показывать ли кнопку лайка (только для публичных результатов)
 }
 
-export function ResultCard({ result, currentUserId, onUpdate }: ResultCardProps) {
+export function ResultCard({ result, currentUserId, onUpdate, showLike = false }: ResultCardProps) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -101,6 +105,14 @@ export function ResultCard({ result, currentUserId, onUpdate }: ResultCardProps)
                   year: "numeric",
                 })}
               </span>
+              {showLike && result.isPublic && (
+                <LikeButton
+                  resultId={result.id}
+                  initialLiked={result.likedByMe || false}
+                  initialCount={result.likesCount || 0}
+                  onUpdate={onUpdate}
+                />
+              )}
             </div>
           </div>
 

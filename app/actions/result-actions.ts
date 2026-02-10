@@ -244,7 +244,9 @@ export async function getUserResults(
 export async function getPublicResults(
   page: number = 1,
   limit: number = 10,
-  search?: string
+  search?: string,
+  sort: "popular" | "recent" = "recent",
+  currentUserId?: string
 ) {
   try {
     const skip = (page - 1) * limit
@@ -259,8 +261,16 @@ export async function getPublicResults(
       }),
     }
 
-    const [results, total] = await Promise.all([
-      prisma.result.findMany({
+    // Для сортировки по популярности нужно получить все результаты,
+    // отсортировать их по количеству лайков, затем применить пагинацию
+    // Это менее эффективно, но необходимо для корректной сортировки
+    
+    let results: any[]
+    let total: number
+
+    if (sort === "popular") {
+      // Получаем все результаты для сортировки по популярности
+      const allResults = await prisma.result.findMany({
         where,
         include: {
           user: {
@@ -270,18 +280,91 @@ export async function getPublicResults(
               image: true,
             },
           },
+          ...(currentUserId && {
+            likes: {
+              where: {
+                userId: currentUserId,
+              },
+              select: {
+                id: true,
+              },
+            },
+          }),
+          _count: {
+            select: {
+              likes: true,
+            },
+          },
         },
-        orderBy: { createdAt: "desc" },
-        skip,
-        take: limit,
-      }),
-      prisma.result.count({ where }),
-    ])
+      })
+
+      // Сортируем по количеству лайков (по убыванию), затем по дате создания
+      allResults.sort((a, b) => {
+        const aCount = a._count.likes
+        const bCount = b._count.likes
+        if (bCount !== aCount) {
+          return bCount - aCount
+        }
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      })
+
+      total = allResults.length
+      // Применяем пагинацию после сортировки
+      results = allResults.slice(skip, skip + limit)
+    } else {
+      // Обычная сортировка по дате
+      const [resultsData, totalData] = await Promise.all([
+        prisma.result.findMany({
+          where,
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+            ...(currentUserId && {
+              likes: {
+                where: {
+                  userId: currentUserId,
+                },
+                select: {
+                  id: true,
+                },
+              },
+            }),
+            _count: {
+              select: {
+                likes: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+          skip,
+          take: limit,
+        }),
+        prisma.result.count({ where }),
+      ])
+      results = resultsData
+      total = totalData
+    }
+
+    // Форматируем результаты с likesCount и likedByMe
+    const formattedResults = results.map((result: any) => ({
+      ...result,
+      likesCount: result._count.likes,
+      likedByMe: currentUserId
+        ? (result.likes && Array.isArray(result.likes) && result.likes.length > 0)
+        : false,
+      likes: undefined, // Удаляем массив likes, он больше не нужен
+      _count: undefined, // Удаляем _count
+    }))
 
     return {
       success: true,
       data: {
-        results,
+        results: formattedResults,
         pagination: {
           page,
           limit,

@@ -24,6 +24,7 @@ model User {
   mresults Mresult[]
   votes    Vote[]
   results  Result[]
+  likes    Like[]
 
   // Связи для Auth.js
   accounts Account[]
@@ -156,10 +157,27 @@ model Result {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes Like[]
 
   @@index([userId, updatedAt])
   @@index([isPublic, createdAt])
   @@index([userId, isFavorite])
   @@map("results")
+}
+
+// Модель для лайков публичных результатов
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  resultId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  result Result @relation(fields: [resultId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resultId])
+  @@index([resultId])
+  @@index([userId])
+  @@map("likes")
 }
