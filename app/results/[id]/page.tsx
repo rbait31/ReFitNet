@@ -27,7 +27,7 @@ export default async function ResultPage({
           image: true,
         },
       },
-      ...(currentUserId && {
+      ...(currentUserId ? {
         likes: {
           where: {
             userId: currentUserId,
@@ -36,7 +36,7 @@ export default async function ResultPage({
             id: true,
           },
         },
-      }),
+      } : {}),
       _count: {
         select: {
           likes: true,
@@ -56,12 +56,17 @@ export default async function ResultPage({
 
   // Форматируем результат
   // Проверяем наличие likes (может быть undefined, если currentUserId отсутствует)
-  const likesArray = 'likes' in result && Array.isArray(result.likes) ? result.likes : []
-  const likedByMe = currentUserId ? likesArray.length > 0 : false
+  const likesArray = currentUserId && 'likes' in result && Array.isArray(result.likes) 
+    ? result.likes 
+    : []
+  const likedByMe = likesArray.length > 0
+  
+  // _count всегда включен в запрос, используем type assertion для обхода проблемы типизации
+  const likesCount = (result as any)._count?.likes ?? 0
   
   const formattedResult = {
     ...result,
-    likesCount: result._count.likes,
+    likesCount,
     likedByMe,
     likes: undefined,
     _count: undefined,
