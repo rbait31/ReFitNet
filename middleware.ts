@@ -5,6 +5,11 @@ import { NextResponse } from "next/server"
  * Middleware для защиты страниц
  * Автоматически редиректит неавторизованных пользователей на /login
  * 
+ * ВАЖНО:
+ * - Главная страница "/" доступна БЕЗ авторизации
+ * - Страница "/login" доступна БЕЗ авторизации
+ * - Страницы "/dashboard/*" требуют авторизации
+ * 
  * Для database sessions withAuth автоматически читает сессию из БД через cookie
  */
 export default withAuth(
@@ -22,8 +27,8 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Если это /login, всегда разрешаем доступ
-        if (req.nextUrl.pathname === "/login") {
+        // Главная страница и /login всегда доступны без авторизации
+        if (req.nextUrl.pathname === "/" || req.nextUrl.pathname === "/login") {
           return true
         }
         // Проверяем наличие токена (пользователь авторизован)
@@ -54,10 +59,10 @@ export default withAuth(
 // withAuth автоматически исключает /api/auth/* из проверки
 export const config = {
   matcher: [
-    "/", // Главная страница
+    // НЕ включаем "/" - главная страница доступна всем
     "/dashboard/:path*",
     "/my-prompts/:path*",
     "/api/protected/:path*", // Пример защищенного API
-    // НЕ включаем /login - он должен быть доступен без авторизации
+    // НЕ включаем /login, /catalog, /results - они доступны без авторизации
   ],
 }

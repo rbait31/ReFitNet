@@ -10,7 +10,6 @@ interface LikeButtonProps {
   resultId: string
   initialLiked: boolean
   initialCount: number
-  onUpdate?: () => void
 }
 
 /**
@@ -21,7 +20,6 @@ export function LikeButton({
   resultId,
   initialLiked,
   initialCount,
-  onUpdate,
 }: LikeButtonProps) {
   const router = useRouter()
   const [liked, setLiked] = useState(initialLiked)
@@ -68,8 +66,7 @@ export function LikeButton({
       setLiked(data.liked)
       setCount(data.likesCount)
 
-      // Вызываем callback для обновления родительского компонента
-      onUpdate?.()
+      // Обновляем страницу для синхронизации данных
       router.refresh()
     } catch (error) {
       // Откатываем оптимистичное обновление
