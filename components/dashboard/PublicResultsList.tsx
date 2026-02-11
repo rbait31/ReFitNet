@@ -148,7 +148,6 @@ export function PublicResultsList({
             <ResultCard
               result={result}
               currentUserId={currentUserId}
-              onUpdate={() => router.refresh()}
               showLike={true}
             />
             {result.user && result.userId !== currentUserId && (

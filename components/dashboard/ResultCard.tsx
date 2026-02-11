@@ -31,11 +31,10 @@ interface ResultCardProps {
     likedByMe?: boolean
   }
   currentUserId: string
-  onUpdate?: () => void
   showLike?: boolean // Показывать ли кнопку лайка (только для публичных результатов)
 }
 
-export function ResultCard({ result, currentUserId, onUpdate, showLike = false }: ResultCardProps) {
+export function ResultCard({ result, currentUserId, showLike = false }: ResultCardProps) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -48,7 +47,6 @@ export function ResultCard({ result, currentUserId, onUpdate, showLike = false }
   const handleToggleFavorite = async () => {
     const response = await toggleFavorite(result.id)
     if (response.success) {
-      onUpdate?.()
       router.refresh()
     }
   }
@@ -56,7 +54,6 @@ export function ResultCard({ result, currentUserId, onUpdate, showLike = false }
   const handleTogglePublic = async () => {
     const response = await togglePublic(result.id)
     if (response.success) {
-      onUpdate?.()
       router.refresh()
     }
   }
@@ -71,7 +68,6 @@ export function ResultCard({ result, currentUserId, onUpdate, showLike = false }
     setIsDeleting(false)
 
     if (response.success) {
-      onUpdate?.()
       router.refresh()
     } else {
       alert(response.error || "Ошибка при удалении")
@@ -110,7 +106,6 @@ export function ResultCard({ result, currentUserId, onUpdate, showLike = false }
                   resultId={result.id}
                   initialLiked={result.likedByMe || false}
                   initialCount={result.likesCount || 0}
-                  onUpdate={onUpdate}
                 />
               )}
             </div>
@@ -185,7 +180,6 @@ export function ResultCard({ result, currentUserId, onUpdate, showLike = false }
           result={result}
           onSuccess={() => {
             setIsDialogOpen(false)
-            onUpdate?.()
             router.refresh()
           }}
         />

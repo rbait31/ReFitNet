@@ -97,7 +97,6 @@ export function ResultsList({
             key={result.id}
             result={result}
             currentUserId={currentUserId}
-            onUpdate={() => router.refresh()}
           />
         ))}
       </div>
