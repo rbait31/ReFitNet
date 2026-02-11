@@ -109,8 +109,11 @@ export async function getPopularPublicResults(limit: number = 20, currentUserId?
       },
     })
 
+    // Фильтруем результаты с лайками > 0
+    const resultsWithLikes = allResults.filter((result) => result._count.likes > 0)
+
     // Сортируем по количеству лайков (по убыванию), затем по дате создания
-    allResults.sort((a, b) => {
+    resultsWithLikes.sort((a, b) => {
       const aCount = a._count.likes
       const bCount = b._count.likes
       if (bCount !== aCount) {
@@ -120,7 +123,7 @@ export async function getPopularPublicResults(limit: number = 20, currentUserId?
     })
 
     // Берем топ N
-    const results = allResults.slice(0, limit)
+    const results = resultsWithLikes.slice(0, limit)
 
     // Получаем все resultIds для эффективной проверки likedByMe
     const resultIds = results.map((r) => r.id)

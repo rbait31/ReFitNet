@@ -76,7 +76,7 @@ export function PublicResultCard({
             </div>
             {result.likesCount !== undefined && (
               <div className="flex items-center gap-1.5">
-                <span>{result.likesCount} лайков</span>
+                <span>{result.likesCount} 👍</span>
               </div>
             )}
           </div>
