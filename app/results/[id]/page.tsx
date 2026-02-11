@@ -55,12 +55,14 @@ export default async function ResultPage({
   }
 
   // Форматируем результат
+  // Проверяем наличие likes (может быть undefined, если currentUserId отсутствует)
+  const likesArray = 'likes' in result && Array.isArray(result.likes) ? result.likes : []
+  const likedByMe = currentUserId ? likesArray.length > 0 : false
+  
   const formattedResult = {
     ...result,
     likesCount: result._count.likes,
-    likedByMe: currentUserId
-      ? (result.likes && Array.isArray(result.likes) && result.likes.length > 0)
-      : false,
+    likedByMe,
     likes: undefined,
     _count: undefined,
   }
